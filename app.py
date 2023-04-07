@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup as bs
 from urllib.request import urlopen as uReq
 import logging
+import pymongo
+
 logging.basicConfig(filename="scrapper.log" , level=logging.INFO)
 
 app = Flask(__name__)
@@ -72,6 +74,14 @@ def index():
                           "Comment": custComment}
                 reviews.append(mydict)
             logging.info("log my final result {}".format(reviews))
+            
+            client = pymongo.MongoClient("mongodb+srv://Adityasingh:anshu1234@cluster0.98n26pg.mongodb.net/?retryWrites=true&w=majority")
+            db = client['review_scrap']
+            collection_scrap = db['collection_scrap']
+            collection_scrap.insert_many(reviews)
+
+
+
             return render_template('result.html', reviews=reviews[0:(len(reviews)-1)])
         except Exception as e:
             logging.info(e)
